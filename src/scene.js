@@ -12,6 +12,11 @@ import HttpDataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper/HttpD
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
 import vtkURLExtract from '@kitware/vtk.js/Common/Core/URLExtract';
+// for picking and corresponding markers
+import vtkPointPicker from '@kitware/vtk.js/Rendering/Core/PointPicker';
+import vtkSphereSource from '@kitware/vtk.js/Filters/Sources/SphereSource';
+import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
+import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 
 // Force DataAccessHelper to have access to various data source
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/HtmlDataAccessHelper';
@@ -53,6 +58,60 @@ export function load(container, options) {
   const renderer = fullScreenRenderer.getRenderer();
   const renderWindow = fullScreenRenderer.getRenderWindow();
   global.renderWindow = renderWindow;
+
+  // ----------------------------------------------------------------------------
+  // Setup picking interaction
+  // ----------------------------------------------------------------------------
+  const picker = vtkPointPicker.newInstance();
+  //picker.setPickFromList(1);
+  // Only try to pick cone points
+  //picker.initializePickList();
+  //picker.addPickList(actor);
+
+  // Pick on mouse right click
+  renderWindow.getInteractor().onRightButtonPress((callData) => {
+    if (renderer !== callData.pokedRenderer) {
+      return;
+    }
+
+    const pos = callData.position;
+    const point = [pos.x, pos.y, 0.0];
+    console.log(`Pick at: ${point}`);
+    picker.pick(point, renderer);
+
+    if (picker.getActors().length === 0) {
+      const pickedPoint = picker.getPickPosition();
+      console.log(`No point picked, default: ${pickedPoint}`);
+    } else {
+      const pickedPointId = picker.getPointId();
+      console.log('Picked point: ', pickedPointId);
+
+      const pointData = picker.getActors()[0].getMapper().getInputData().getPointData();
+
+      var label = '';
+        for(var i = 0; i < pointData.getNumberOfArrays(); i++) {
+          label += `${pointData.getArrayName(i)}: ${pointData.getArray(i)[pickedPointId]}`;
+        }
+
+      console.log(label)
+
+      const pickedPoints = picker.getPickedPositions();
+      for (let i = 0; i < pickedPoints.length; i++) {
+        const pickedPoint = pickedPoints[i];
+        console.log(`Picked: ${pickedPoint}`);
+        const sphere = vtkSphereSource.newInstance();
+        sphere.setCenter(pickedPoint);
+        sphere.setRadius(0.01);
+        const sphereMapper = vtkMapper.newInstance();
+        sphereMapper.setInputData(sphere.getOutputData());
+        const sphereActor = vtkActor.newInstance();
+        sphereActor.setMapper(sphereMapper);
+        sphereActor.getProperty().setColor(0.0, 1.0, 0.0);
+        renderer.addActor(sphereActor);
+      }
+    }
+    renderWindow.render();
+  });
 
   function onReady(sceneImporter) {
     sceneImporter.onReady(() => {
