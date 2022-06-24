@@ -40,7 +40,11 @@ export default function addWidget(renderer, container, sceneItems, render) {
             textCtx.font = '12px serif';
             textCtx.textAlign = 'center';
             textCtx.textBaseline = 'middle';
-            textCtx.fillText(`p ${idx}`, xy[0], dims.height - xy[1]);
+            textCtx.fillText(
+                `p ${idx}`,
+                // pixel ratio scaling from https://github.com/Kitware/vtk-js/issues/1179#issuecomment-544709725
+                xy[0] / window.devicePixelRatio,
+                dims.height - xy[1] / window.devicePixelRatio);
             });
             }
         });
