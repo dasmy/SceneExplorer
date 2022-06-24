@@ -17,24 +17,18 @@ import vtkPointPicker from '@kitware/vtk.js/Rendering/Core/PointPicker';
 import vtkSphereSource from '@kitware/vtk.js/Filters/Sources/SphereSource';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
-// for label support
-import vtkPixelSpaceCallbackMapper from '@kitware/vtk.js/Rendering/Core/PixelSpaceCallbackMapper';
-
 
 // Force DataAccessHelper to have access to various data source
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/HtmlDataAccessHelper';
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
 
 import controlWidget from './SceneExplorerWidget';
+import labelWidget from './LabelWidget';
 import style from './SceneExplorer.module.css';
 
 const iOS = /iPad|iPhone|iPod/.test(window.navigator.platform);
 let autoInit = true;
 let widgetCreated = false;
-
-let textCanvas = null;
-let textCtx = null;
-let dims = null;
 
 // Add class to body if iOS device --------------------------------------------
 
@@ -66,12 +60,6 @@ export function load(container, options) {
   const renderer = fullScreenRenderer.getRenderer();
   const renderWindow = fullScreenRenderer.getRenderWindow();
   global.renderWindow = renderWindow;
-
-  textCanvas = document.createElement('canvas');
-  textCanvas.classList.add(style.fullParentSize, 'textCanvas');
-  fullScreenRenderer.getContainer().appendChild(textCanvas);
-
-  textCtx = textCanvas.getContext('2d');
 
   // ----------------------------------------------------------------------------
   // Setup picking interaction
@@ -131,32 +119,18 @@ export function load(container, options) {
     sceneImporter.onReady(() => {
       renderWindow.render();
 
-      // labels
-      for (const sceneItem of sceneImporter.getScene()) {
-        console.log(`Adding labels to ${sceneItem.name}`)
-
-        const psMapper = vtkPixelSpaceCallbackMapper.newInstance();
-        psMapper.setInputConnection(sceneItem.source.getOutputPort());
-        psMapper.setCallback((coordsList) => {
-        if (textCtx && dims) {
-          textCtx.clearRect(0, 0, dims.width, dims.height);
-          coordsList.slice(0, 100).forEach((xy, idx) => {
-            textCtx.font = '12px serif';
-            textCtx.textAlign = 'center';
-            textCtx.textBaseline = 'middle';
-            textCtx.fillText(`p ${idx}`, xy[0], dims.height - xy[1]);
-            });
-          }
-        });
-
-        const textActor = vtkActor.newInstance();
-        textActor.setMapper(psMapper);
-        renderer.addActor(textActor);
-      }
-
-      // Add UI to dynamically change rendering settings
       if (!widgetCreated) {
         widgetCreated = true;
+
+        // Add UI to enable labels for different scene items
+        labelWidget(
+          fullScreenRenderer,
+          document.querySelector('body'),
+          sceneImporter.getScene(),
+          renderWindow.render
+        );
+
+        // Add UI to dynamically change rendering settings
         controlWidget(
           document.querySelector('body'),
           sceneImporter.getScene(),
@@ -169,15 +143,6 @@ export function load(container, options) {
       sceneImporter.resetScene();
       renderWindow.render();
     });
-
-    window.addEventListener('resize', () => {
-      dims = container.getBoundingClientRect();
-      textCanvas.setAttribute('width', dims.width);
-      textCanvas.setAttribute('height', dims.height);
-      renderWindow.render();
-    });
-
-    window.dispatchEvent(new Event("resize"));
   }
 
   if (options.url) {
