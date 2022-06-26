@@ -3,11 +3,11 @@ const path = require('path');
 const vtkRules = require('@kitware/vtk.js/Utilities/config/dependency.js').webpack.core.rules;
 const cssRules = require('@kitware/vtk.js/Utilities/config/dependency.js').webpack.css.rules;
 
-const example = process.env['EXAMPLE'].replace(/[\/]|\.\./g, '') || 'cone.js';
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: path.join(__dirname, 'src', example),
+    app: path.join(__dirname, 'src', 'scene.js'),
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -35,5 +35,8 @@ module.exports = {
       colors: true,
     },
   },
+  plugins: [
+    new HtmlWebpackPlugin()
+  ],
 };
 
