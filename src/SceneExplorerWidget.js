@@ -1,4 +1,6 @@
 import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
+import style from './SceneExplorer.module.css';
+
 
 const SETTINGS_OPTIONS = {
   defaultSettings: {},
@@ -82,18 +84,7 @@ export default function addWidget(container, sceneItems, render) {
 
   const listContainer = document.createElement('ul');
   listContainer.innerHTML = listStr;
-
-  listContainer.style.position = 'absolute';
-  listContainer.style.left = '25px';
-  listContainer.style.top = '25px';
-  listContainer.style.backgroundColor = 'white';
-  listContainer.style.borderRadius = '5px';
-  listContainer.style.listStyle = 'none';
-  listContainer.style.padding = '5px 10px';
-  listContainer.style.margin = '0';
-  listContainer.style.display = 'none';
-  listContainer.style.border = 'solid 1px black';
-
+  listContainer.setAttribute('class', style.menu);
   container.appendChild(listContainer);
 
   document.querySelector('body').addEventListener('keypress', (e) => {

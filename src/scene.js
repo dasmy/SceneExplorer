@@ -122,9 +122,14 @@ export function load(container, options) {
       if (!widgetCreated) {
         widgetCreated = true;
 
+        const menuContainer = document.createElement('div');
+        menuContainer.setAttribute('class', style.menuContainer);
+        document.querySelector('body').appendChild(menuContainer)
+
         // Add UI to enable labels for different scene items
         labelWidget(
           fullScreenRenderer,
+          menuContainer,
           document.querySelector('body'),
           sceneImporter.getScene(),
           renderWindow.render
@@ -132,7 +137,7 @@ export function load(container, options) {
 
         // Add UI to dynamically change rendering settings
         controlWidget(
-          document.querySelector('body'),
+          menuContainer,
           sceneImporter.getScene(),
           renderWindow.render
         );

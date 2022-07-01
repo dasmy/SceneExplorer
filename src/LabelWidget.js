@@ -1,14 +1,15 @@
 
 import vtkPixelSpaceCallbackMapper from '@kitware/vtk.js/Rendering/Core/PixelSpaceCallbackMapper';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
+import style from './SceneExplorer.module.css';
 
 
-export default function addWidget(renderer, container, sceneItems, render) {
+export default function addWidget(renderer, menuContainer, viewContainer, sceneItems, render) {
 
     let dims = null;
 
     window.addEventListener('resize', () => {
-        dims = container.getBoundingClientRect();
+        dims = viewContainer.getBoundingClientRect();
         render();
       });
 
@@ -31,19 +32,9 @@ export default function addWidget(renderer, container, sceneItems, render) {
 
     const listContainer = document.createElement('ul');
     listContainer.innerHTML = listStr;
-
-    listContainer.style.position = 'absolute';
-    listContainer.style.left = '25px';
-    listContainer.style.top = '100px';
-    listContainer.style.backgroundColor = 'white';
-    listContainer.style.borderRadius = '5px';
-    listContainer.style.listStyle = 'none';
-    listContainer.style.padding = '5px 10px';
-    listContainer.style.margin = '0';
-    listContainer.style.display = 'block';
-    listContainer.style.border = 'solid 1px black';
-
-    container.appendChild(listContainer);
+    listContainer.setAttribute('class', style.menu);
+    menu.appendChild(listContainer);
+    menuContainer.appendChild(menu);
 
     document.querySelector('body').addEventListener('keypress', (e) => {
       if (String.fromCharCode(e.charCode) === 'l') {
@@ -102,13 +93,15 @@ export default function addWidget(renderer, container, sceneItems, render) {
                     textCtx.font = '12px serif';
                     textCtx.textAlign = 'center';
                     textCtx.textBaseline = 'middle';
+                    console.log(`${sceneItem.source.getArrays()[labelArray-1].array.values[idx]}: ${xy[0] / window.devicePixelRatio}, ${dims.height - xy[1] / window.devicePixelRatio}`);
                     textCtx.fillText(
                         // "-1" to compensate for offset introduced in getArrays()
                         `${sceneItem.source.getArrays()[labelArray-1].array.values[idx]}`,
                         // pixel ratio scaling from https://github.com/Kitware/vtk-js/issues/1179#issuecomment-544709725
                         xy[0] / window.devicePixelRatio,
                         dims.height - xy[1] / window.devicePixelRatio);
-                    });            }
+                    });
+              }
             }
         });
 
