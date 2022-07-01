@@ -33,3 +33,25 @@ jobs:
       with:
         name: SceneExplorer_node-${{ matrix.node-version }}.html
         path: dist/SceneExplorer.html
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{ github.sha }}
+        tag_name: ${{ github.ref }}
+        body_path: Readme.md
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Upload Release Artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/SceneExplorer.html
+        asset_name: SceneExplorer.html
+        asset_content_type: text/html
