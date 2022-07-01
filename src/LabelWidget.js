@@ -1,6 +1,7 @@
 
 import vtkPixelSpaceCallbackMapper from '@kitware/vtk.js/Rendering/Core/PixelSpaceCallbackMapper';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
+import style from './SceneExplorer.module.css';
 
 
 export default function addWidget(renderer, container, sceneItems, render) {
@@ -31,18 +32,7 @@ export default function addWidget(renderer, container, sceneItems, render) {
 
     const listContainer = document.createElement('ul');
     listContainer.innerHTML = listStr;
-
-    listContainer.style.position = 'absolute';
-    listContainer.style.left = '25px';
-    listContainer.style.top = '100px';
-    listContainer.style.backgroundColor = 'white';
-    listContainer.style.borderRadius = '5px';
-    listContainer.style.listStyle = 'none';
-    listContainer.style.padding = '5px 10px';
-    listContainer.style.margin = '0';
-    listContainer.style.display = 'block';
-    listContainer.style.border = 'solid 1px black';
-
+    listContainer.setAttribute('class', style.menu);
     container.appendChild(listContainer);
 
     document.querySelector('body').addEventListener('keypress', (e) => {
