@@ -82,17 +82,23 @@ export default function addWidget(container, sceneItems, render) {
     )
     .join('');
 
-  const listContainer = document.createElement('ul');
-  listContainer.innerHTML = listStr;
-  listContainer.setAttribute('class', style.menu);
-  container.appendChild(listContainer);
+    const menu = document.createElement('div');
+    menu.setAttribute('class', style.menu);
+    const heading = document.createElement('h3')
+    heading.textContent = 'View Configuration (c)'
+    menu.appendChild(heading);
+    const listContainer = document.createElement('ul');
+    listContainer.innerHTML = listStr;
+    listContainer.setAttribute('class', style.menu);
+    menu.appendChild(listContainer);
+    container.appendChild(menu);
 
   document.querySelector('body').addEventListener('keypress', (e) => {
     if (String.fromCharCode(e.charCode) === 'c') {
-      if (listContainer.style.display === 'none') {
-        listContainer.style.display = 'block';
+      if (menu.style.display === 'none') {
+        menu.style.display = 'block';
       } else {
-        listContainer.style.display = 'none';
+        menu.style.display = 'none';
       }
     }
   });

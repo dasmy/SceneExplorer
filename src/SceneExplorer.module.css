@@ -59,11 +59,10 @@
 .menu {
   float: left;
   clear: left;
+  margin-bottom: 5px;
   background-color: white;
   border-radius: 5px;
   list-style: none;
   padding: 5px 10px;
-  margin: 0;
   display: block;
-  border: solid 1px black;
 }

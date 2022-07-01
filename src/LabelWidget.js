@@ -30,6 +30,11 @@ export default function addWidget(renderer, menuContainer, viewContainer, sceneI
         )
         .join('');
 
+    const menu = document.createElement('div');
+    menu.setAttribute('class', style.menu);
+    const heading = document.createElement('h3')
+    heading.textContent = 'Label (l)'
+    menu.appendChild(heading);
     const listContainer = document.createElement('ul');
     listContainer.innerHTML = listStr;
     listContainer.setAttribute('class', style.menu);
@@ -38,10 +43,10 @@ export default function addWidget(renderer, menuContainer, viewContainer, sceneI
 
     document.querySelector('body').addEventListener('keypress', (e) => {
       if (String.fromCharCode(e.charCode) === 'l') {
-        if (listContainer.style.display === 'none') {
-          listContainer.style.display = 'block';
+        if (menu.style.display === 'none') {
+          menu.style.display = 'block';
         } else {
-          listContainer.style.display = 'none';
+          menu.style.display = 'none';
         }
       }
     });
