@@ -10,10 +10,9 @@ Starting from a verbatim copy of [the SceneExplorer example in the vtk.js github
 
 # Building / Usage
 ```
-npm init
+npm init -y
 npm install @kitware/vtk.js
-npm install -D webpack-cli webpack webpack-dev-server
-npm install ... SOME MODULES ...    # TODO: still need to cleanup package.json
+npm install
 npx webpack --progress --mode=development
 open dist/SceneExplorer.html
 ```
