@@ -23,13 +23,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Install dependencies
       run: |
         npm install
+
+    - name: Build
+      run: |
         npx webpack
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: SceneExplorer_node-${{ matrix.node-version }}.html
-        path: dist/SceneExplorer.html
+        path: ./dist/SceneExplorer.html
